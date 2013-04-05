@@ -85,3 +85,65 @@ Now, you should be able to run `cap deploy` to start deployment.
 
 It will try to ssh to your localhost using the current user and prompt for your password.
 
+Step 3 - Multistages and multiservers deployement
+-------------------------------------------------
+
+### Multistage
+
+Most of the time we need to work with different environments and different servers. Thanks to the multistages extension (part of capistrano) it is really easy.
+
+We early created a directory named `stages`, it is where we will set up different environment.
+
+First, we need to `require` extension. Edit `deployment/deploy.rb` and append the following to the top of the file.
+
+```ruby
+set :stages,        %w(production development)
+set :default_stage, 'development'
+set :stage_dir,     'deployment/stages'
+require 'capistrano/ext/multistage'
+
+set :deploy_to, "~/capifony/localhost"
+```
+
+We also need to remove the following line:
+
+```ruby
+set :domain, "localhost"
+set :deploy_to, "~/capifony/#{domain}"
+role :web,        domain                         # Your HTTP server, Apache/etc
+role :app,        domain                         # This may be the same as your `Web` server
+role :db,         domain, :primary => true       # This is where Symfony2 migrations will run
+```
+
+Now, we create a per stage file in `deployment/stages`. We should end up with `deployment/stages/production.rb` and `deployment/stages/development.rb` both empty files.
+
+In `development.rb` add the following line: 
+
+```ruby
+server 'localhost', :app, :web, :primary => true
+```
+
+Do the same in `production.rb` and change `localhost` to your production domain.
+
+In order to deploy on development or production environment we need to prepend the task with the stage:
+
+```bash
+$ cap development deploy
+```
+
+Because we set `default_stage` to `development` we can omit it:
+
+```bash
+$ cap deploy
+```
+
+### Multiservers
+
+Scalable production environements are often clustered to multiple frontend, to deploy to several servers at a time, simply add
+a new server to your `production.rb` file:
+
+```ruby
+server '0001.production.com', :app, :web, :primary => true
+server '0002.production.com', :app, :web
+```
+

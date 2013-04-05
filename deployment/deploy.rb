@@ -1,7 +1,11 @@
 set :application, "Capifony Symfony 2 Tutorial"
-set :domain,      "localhost"
-set :deploy_to,   "~/capifony/#{domain}"
+set :deploy_to,   "~/capifony/localhost"
 set :app_path,    "app"
+
+set :stages,        %w(production development)
+set :default_stage, 'development'
+set :stage_dir,     'deployment/stages'
+require 'capistrano/ext/multistage'
 
 set :repository,  "~/Workspace/capifony-tuto"
 set :scm,         :git
@@ -9,10 +13,6 @@ set :scm,         :git
 
 set :model_manager, "doctrine"
 # Or: `propel`
-
-role :web,        domain                         # Your HTTP server, Apache/etc
-role :app,        domain                         # This may be the same as your `Web` server
-role :db,         domain, :primary => true       # This is where Symfony2 migrations will run
 
 set  :keep_releases,  3
 
@@ -22,3 +22,4 @@ logger.level = Logger::MAX_LEVEL
 default_run_options[:pty] = true
 
 set :use_composer, true
+
