@@ -147,3 +147,7 @@ server '0001.production.com', :app, :web, :primary => true
 server '0002.production.com', :app, :web
 ```
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/borisguery/capifony-tuto/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
